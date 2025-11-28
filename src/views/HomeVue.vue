@@ -6,11 +6,10 @@
     </header>
 
     <main class="main-container">
-      <h2>Bem-vindo!</h2>
       <div class="create-container">
         <div class="cards">
           Cliente
-          <button class="create-btn">Cadastrar</button>
+          <button class="create-btn" @click="openClientModal">Cadastrar</button>
         </div>
 
         <div class="cards">
@@ -30,19 +29,37 @@
       </div>
 
       <div class="products-container">
-        <h3>Controle de Produção</h3>
+        <div class="product-header">
+          <h3>Controle de Produção</h3>
+        </div>
+        <div class="product-card">Teste</div>
+        <div class="product-card">Teste</div>
+        <div class="product-card">Teste</div>
+        <div class="product-card">Teste</div>
+        <div class="product-card">Teste</div>
         <div class="product-card">Teste</div>
       </div>
     </main>
+
+    <ClientFormModal
+      :isOpen="isClientModalOpen"
+      @close="closeClientModal"
+      @client-created="handleClientCreated"
+    />
   </div>
 </template>
 
 <script>
 import { useAuthStore } from '@/stores/authStore.js'
 import { useRouter } from 'vue-router'
+import ClientFormModal from '@/components/ClientFormModal.vue'
 
 export default {
   name: 'HomeVue',
+
+  components: {
+    ClientFormModal,
+  },
 
   setup() {
     const authStore = useAuthStore()
@@ -51,11 +68,29 @@ export default {
     return { authStore, router }
   },
 
+  data() {
+    return {
+      isClientModalOpen: false,
+    }
+  },
+
   methods: {
     handleLogout() {
       console.log('Fazendo logout...')
       this.authStore.logout()
       this.router.push('/')
+    },
+
+    openClientModal() {
+      this.isClientModalOpen = true
+    },
+
+    closeClientModal() {
+      this.isClientModalOpen = false
+    },
+
+    handleClientCreated() {
+      console.log('Cliente criado.')
     },
   },
 }
@@ -81,30 +116,31 @@ h1 {
 }
 
 .profile-btn {
-  background-color: var(--bg-color);
+  background-color: var(--secondary-color);
   border: none;
   cursor: pointer;
-  color: var(--secondary-color);
+  color: var(--bg-color);
   font-weight: bold;
   height: 40px;
   width: 80px;
-  padding: 0 10px;
+  padding: 0;
   border-radius: 5px;
-  transition: opacity 0.3s;
 }
 
 .profile-btn:hover {
-  opacity: 0.8;
+  background-color: #f2e9ff;
 }
 
 .main-container {
   margin-top: 10vh;
   background-color: var(--bg-color);
+  padding: 50px 100px 0 100px;
 }
 
-h2 {
-  color: var(--secondary-color);
-  padding: 2rem;
+.create-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .cards {
@@ -113,16 +149,17 @@ h2 {
   align-items: center;
   background-color: var(--secondary-color);
   border-radius: 5px;
-  margin: 10px;
+  margin: 0 0 10px 0;
   padding: 0 10px;
   height: 50px;
+  width: 70%;
   box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.3),
     0 12px 40px rgba(0, 0, 0, 0.1);
 }
 
 .create-btn {
-  background-color: var(--btn-color);
+  background-color: var(--btn-primary-color);
   color: var(--secondary-color);
   border: none;
   border-radius: 3px;
@@ -135,15 +172,27 @@ h2 {
 }
 
 .products-container {
+  display: flex;
+  flex-direction: column;
   background-color: var(--secondary-color);
+  border-radius: 15px;
   min-height: 400px;
-  padding: 2rem;
+  margin-top: 50px;
+}
+
+.product-header {
+  display: flex;
+  justify-content: start;
+}
+
+.product-header h3 {
+  padding: 0 30px;
 }
 
 .product-card {
   background-color: var(--product-card-color);
   border-radius: 5px;
-  margin: 10px;
+  margin: 0 50px 10px 50px;
   height: 60px;
 }
 </style>
