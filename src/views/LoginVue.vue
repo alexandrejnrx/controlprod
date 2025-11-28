@@ -1,15 +1,17 @@
 <template>
   <div class="container">
-    <div class="card-login">
-      <h2>Login</h2>
+    <div class="login-container">
+      <div class="login-header">
+        <h2>Login</h2>
+      </div>
       <form @submit.prevent="handleSubmit">
         <div class="input-field">
-          <label for="username">Usuário</label>
+          <label for="form.username">Usuário</label>
           <input type="text" v-model="form.username" :disabled="authStore.loading" />
         </div>
 
         <div class="input-field">
-          <label for="password">Senha</label>
+          <label for="form.password">Senha</label>
           <input type="password" v-model="form.password" :disabled="authStore.loading" />
         </div>
 
@@ -78,8 +80,8 @@ export default {
   height: 100vh;
 }
 
-.card-login {
-  padding: 40px 30px;
+.login-container {
+  height: 200px;
   width: 100%;
   max-width: 400px;
   background-color: var(--secondary-color);
@@ -89,21 +91,22 @@ export default {
     0 12px 40px rgba(0, 0, 0, 0.1);
 }
 
-.card-login h2 {
+h2 {
   color: var(--bg-color);
-  display: flex;
-  justify-content: center;
+  text-align: center;
+  padding-top: 10px;
+  margin: 0;
 }
 
 .input-field {
   display: flex;
   flex-direction: column;
-  padding-bottom: 10px;
+  padding: 0 10px 0 10px;
 }
 
 .input-field label {
   color: var(--bg-color);
-  padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 .input-field input {
@@ -121,7 +124,7 @@ export default {
 .submit-btn {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  height: 40px;
 }
 
 .submit-btn button {
@@ -130,9 +133,9 @@ export default {
   background-color: var(--secondary-color);
   cursor: pointer;
   width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: 600;
+  height: 100%;
+  border-radius: 0 0 10px 10px;
+  font-weight: bold;
   transition: background-color 0.3s;
 }
 
