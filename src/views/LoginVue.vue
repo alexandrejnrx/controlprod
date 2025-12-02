@@ -89,11 +89,6 @@ h2 {
   padding: 8px 4px;
 }
 
-.input-field input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .login-footer {
   display: flex;
   justify-content: center;
@@ -109,6 +104,9 @@ h2 {
   height: 100%;
   border-radius: 0 0 10px 10px;
   font-weight: bold;
-  transition: background-color 0.3s;
+}
+
+.login-footer button:hover {
+  background-color: #f2e9ff;
 }
 </style>
