@@ -12,8 +12,8 @@
         </div>
 
         <div class="input-field">
-          <label for="passsword">Senha</label>
-          <input type="password" id="passsword" v-model="password" />
+          <label for="password">Senha</label>
+          <input type="password" id="password" v-model="password" />
         </div>
 
         <div class="login-footer">
