@@ -19,12 +19,12 @@
 
         <div class="cards">
           Tipo de produto
-          <button class="create-btn">Cadastrar</button>
+          <button class="create-btn" @click="openProductTypeModal">Cadastrar</button>
         </div>
 
         <div class="cards">
           Produto
-          <button class="create-btn">Cadastrar</button>
+          <button class="create-btn" @click="openProductModal">Cadastrar</button>
         </div>
       </div>
 
@@ -32,12 +32,14 @@
         <div class="product-header">
           <h3>Controle de Produção</h3>
         </div>
-        <div class="product-card">Teste</div>
-        <div class="product-card">Teste</div>
-        <div class="product-card">Teste</div>
-        <div class="product-card">Teste</div>
-        <div class="product-card">Teste</div>
-        <div class="product-card">Teste</div>
+        <div class="product-card" v-for="product in products" :key="product.id">
+          <div style="padding: 10px">
+            <strong>{{ product.productType.name }}</strong
+            ><br />
+            NUP: {{ product.nup }}<br />
+            Serial: {{ product.serialNumber }}<br />
+          </div>
+        </div>
       </div>
     </main>
 
@@ -52,17 +54,51 @@
       @cancel="showProjectModal = false"
       @success="showProjectModal = false"
     />
+
+    <ProductTypeFormModal
+      v-if="showProductTypeModal"
+      @cancel="showProductTypeModal = false"
+      @success="showProductTypeModal = false"
+    />
+
+    <ProductFormModal
+      v-if="showProductModal"
+      @cancel="showProductModal = false"
+      @success="handleProductSuccess"
+    />
   </div>
 </template>
 
 <script setup>
 import { logout } from '@/services/homeService.js'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import ClientFormModal from '@/components/ClientFormModal.vue'
 import ProjectFormModal from '@/components/ProjectFormModal.vue'
+import ProductTypeFormModal from '@/components/ProductTypeFormModal.vue'
+import ProductFormModal from '@/components/ProductFormModal.vue'
+import { getProduct } from '@/services/productService.js'
 
 const showClientModal = ref(false)
 const showProjectModal = ref(false)
+const showProductTypeModal = ref(false)
+const showProductModal = ref(false)
+const products = ref([])
+
+async function loadProducts() {
+  const response = await getProduct()
+  if (response.success) {
+    products.value = response.data
+  }
+}
+
+onMounted(async () => {
+  await loadProducts()
+})
+
+async function handleProductSuccess() {
+  showProductModal.value = false
+  await loadProducts()
+}
 
 function openClientModal() {
   showClientModal.value = true
@@ -70,6 +106,14 @@ function openClientModal() {
 
 function openProjectModal() {
   showProjectModal.value = true
+}
+
+function openProductTypeModal() {
+  showProductTypeModal.value = true
+}
+
+function openProductModal() {
+  showProductModal.value = true
 }
 </script>
 
