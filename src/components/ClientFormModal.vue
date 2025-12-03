@@ -5,18 +5,27 @@
         <h2>Cadastrar Cliente</h2>
       </div>
 
-      <form>
+      <form @submit.prevent="handleSubmit">
         <div class="input-field">
-          <label for="form.name">Nome do Cliente</label>
-          <input type="text" />
+          <label for="clientName">Nome do Cliente</label>
+          <input type="text" id="clientName" v-model="clientName" />
         </div>
 
         <div class="input-field">
           <label for="clientType">Tipo de Cliente</label>
-          <select>
-            <option value="" disabled>Selecione um tipo</option>
+          <select id="clientType" v-model="clientType">
+            <option value="">Selecione um tipo</option>
             <option value="INTERNAL">Interno</option>
             <option value="EXTERNAL">Externo</option>
+          </select>
+        </div>
+
+        <div class="input-field">
+          <label for="active">Status</label>
+          <select id="active" v-model="active">
+            <option value="">Selecione o status</option>
+            <option :value="true">Ativo</option>
+            <option :value="false">Inativo</option>
           </select>
         </div>
 
@@ -28,6 +37,34 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { createClient } from '@/services/clientService.js'
+
+const emit = defineEmits(['cancel', 'success'])
+
+const clientName = ref('')
+const clientType = ref('')
+const active = ref(true)
+
+async function handleSubmit() {
+  const clientData = {
+    name: clientName.value,
+    clientType: clientType.value,
+    active: active.value,
+  }
+
+  const result = await createClient(clientData)
+
+  if (result.success) {
+    emit('success')
+    emit('cancel')
+  } else {
+    console.error('Detalhes do erro:', result.error.response?.data)
+  }
+}
+</script>
 
 <style scoped>
 .container {

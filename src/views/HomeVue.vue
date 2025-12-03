@@ -14,7 +14,7 @@
 
         <div class="cards">
           Projetos
-          <button class="create-btn">Cadastrar</button>
+          <button class="create-btn" @click="openProjectModal">Cadastrar</button>
         </div>
 
         <div class="cards">
@@ -41,7 +41,17 @@
       </div>
     </main>
 
-    <ClientFormModal v-if="showClientModal" @cancel="showClientModal = false" />
+    <ClientFormModal
+      v-if="showClientModal"
+      @cancel="showClientModal = false"
+      @success="showClientModal = false"
+    />
+
+    <ProjectFormModal
+      v-if="showProjectModal"
+      @cancel="showProjectModal = false"
+      @success="showProjectModal = false"
+    />
   </div>
 </template>
 
@@ -49,11 +59,17 @@
 import { logout } from '@/services/homeService.js'
 import { ref } from 'vue'
 import ClientFormModal from '@/components/ClientFormModal.vue'
+import ProjectFormModal from '@/components/ProjectFormModal.vue'
 
 const showClientModal = ref(false)
+const showProjectModal = ref(false)
 
 function openClientModal() {
   showClientModal.value = true
+}
+
+function openProjectModal() {
+  showProjectModal.value = true
 }
 </script>
 
