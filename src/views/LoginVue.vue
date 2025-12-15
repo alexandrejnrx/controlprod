@@ -3,7 +3,7 @@
     <div class="login-container">
       <div class="login-content">
         <div class="login-header">
-          <h2>Login</h2>
+          <h2>ControlProd</h2>
         </div>
 
         <form @submit.prevent="handleLogin">
@@ -76,7 +76,6 @@ function clearFields() {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 1rem;
 }
 
 .login-container {
@@ -95,7 +94,7 @@ h2 {
   color: var(--bg-color);
   text-align: center;
   margin: 0 0 1rem 0;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
 }
 
 .input-field {
@@ -106,7 +105,6 @@ h2 {
 .input-field label {
   color: var(--bg-color);
   margin: 0.5rem 0 0.5rem 0;
-  font-size: 0.95rem;
 }
 
 .input-field input {
@@ -136,7 +134,7 @@ h2 {
   cursor: pointer;
   width: 100%;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.2rem;
   padding: 0.5rem 0 0.5rem 0;
 }
 
