@@ -2,46 +2,72 @@
   <div class="container">
     <header class="header-container">
       <h1>ControlProd</h1>
-      <button class="profile-btn" @click="logout">Sair</button>
+      <div class="profile-menu">
+        <div class="profile-toggle" @click="toggleProfileMenu">Perfil</div>
+        <ul v-show="showProfileMenu" class="dropdown">
+          <li><a>Meu Perfil</a></li>
+          <li><a class="profile-btn" @click="logout">Sair</a></li>
+        </ul>
+      </div>
     </header>
 
-    <main class="main-container">
-      <div class="create-container">
-        <div class="cards">
-          Cliente
-          <button class="create-btn" @click="openClientModal">Cadastrar</button>
-        </div>
-
-        <div class="cards">
-          Projetos
-          <button class="create-btn" @click="openProjectModal">Cadastrar</button>
-        </div>
-
-        <div class="cards">
-          Tipo de produto
-          <button class="create-btn" @click="openProductTypeModal">Cadastrar</button>
-        </div>
-
-        <div class="cards">
-          Produto
-          <button class="create-btn" @click="openProductModal">Cadastrar</button>
-        </div>
-      </div>
-
-      <div class="products-container">
-        <div class="product-header">
-          <h3>Controle de Produção</h3>
-        </div>
-        <div class="product-card" v-for="product in products" :key="product.id">
-          <div style="padding: 10px">
-            <strong>{{ product.productType.name }}</strong
-            ><br />
-            NUP: {{ product.nup }}<br />
-            Serial: {{ product.serialNumber }}<br />
+    <div class="content-container">
+      <main class="main-content">
+        <section>
+          <div class="section-header">
+            <h2 class="section-title">Controle de Produção</h2>
+            <div class="search-container">
+              <input type="text" placeholder="Buscar..." />
+              <button class="search-btn">
+                <img src="@/assets/svg/search.svg" alt="buscar" />
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
-    </main>
+
+          <div class="products-list">
+            <div
+              class="product-card"
+              v-for="product in products"
+              :key="product.id"
+              @click="goToProductsDetails(product.productType.id)"
+            >
+              <div class="product-icon">
+                <img src="@/assets/svg/products.svg" alt="icone produto" />
+              </div>
+
+              <div class="product-info">
+                <div class="product-info-title">
+                  <span class="product-code">{{ product.productType.internalCode }}</span>
+                  <span class="project-name">{{ product.productType.project.name }}</span>
+                </div>
+                <h3 class="product-name">{{ product.productType.name }}</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="sidebar">
+        <h2 class="sidebar-title">Ações Rápidas</h2>
+        <nav class="quick-actions" aria-label="Ações de cadastro">
+          <button class="action-btn" @click="openClientModal">
+            <span>Clientes</span>
+          </button>
+
+          <button class="action-btn" @click="openProjectModal">
+            <span>Projetos</span>
+          </button>
+
+          <button class="action-btn" @click="openProductTypeModal">
+            <span>Tipos de produto</span>
+          </button>
+
+          <button class="action-btn" @click="openProductModal">
+            <span>Produtos</span>
+          </button>
+        </nav>
+      </aside>
+    </div>
 
     <ClientFormModal
       v-if="showClientModal"
@@ -71,18 +97,32 @@
 
 <script setup>
 import { logout } from '@/services/homeService.js'
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import ClientFormModal from '@/components/ClientFormModal.vue'
 import ProjectFormModal from '@/components/ProjectFormModal.vue'
 import ProductTypeFormModal from '@/components/ProductTypeFormModal.vue'
 import ProductFormModal from '@/components/ProductFormModal.vue'
 import { getProduct } from '@/services/productService.js'
+import { useRouter } from 'vue-router'
 
 const showClientModal = ref(false)
 const showProjectModal = ref(false)
 const showProductTypeModal = ref(false)
 const showProductModal = ref(false)
 const products = ref([])
+const showProfileMenu = ref(false)
+const router = useRouter()
+
+function goToProductsDetails(productTypeId) {
+  router.push({
+    name: 'products-details',
+    params: { productTypeId },
+  })
+}
+
+function toggleProfileMenu() {
+  showProfileMenu.value = !showProfileMenu.value
+}
 
 async function loadProducts() {
   const response = await getProduct()
@@ -118,103 +158,277 @@ function openProductModal() {
 </script>
 
 <style scoped>
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .header-container {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 10vh;
+  height: 60px;
   background-color: var(--secondary-color);
-  padding: 0 10px;
+  padding: 0 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   color: var(--bg-color);
+  margin: 0;
 }
 
-.profile-btn {
-  background-color: var(--secondary-color);
-  border: none;
+.product-name {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.profile-menu {
+  position: relative;
+  display: inline-block;
   cursor: pointer;
-  color: var(--bg-color);
-  font-weight: bold;
-  height: 40px;
-  width: 80px;
-  padding: 0;
-  border-radius: 5px;
 }
 
-.profile-btn:hover {
-  background-color: #f2e9ff;
-}
-
-.main-container {
-  margin-top: 10vh;
-  background-color: var(--bg-color);
-  padding: 50px 100px 0 100px;
-}
-
-.create-container {
+.profile-toggle {
   display: flex;
-  flex-direction: column;
   align-items: center;
 }
 
-.cards {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--secondary-color);
-  border-radius: 5px;
-  margin: 0 0 10px 0;
-  padding: 0 10px;
-  height: 50px;
-  width: 70%;
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  list-style: none;
+  padding: 0.5rem;
+  margin: 0;
   box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.3),
     0 12px 40px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
 }
 
-.create-btn {
-  background-color: var(--btn-primary-color);
-  color: var(--secondary-color);
+.dropdown li {
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+}
+
+.dropdown li:hover {
+  background-color: var(--card-bg-color);
+}
+
+.dropdown a,
+.dropdown button {
   border: none;
-  border-radius: 3px;
+  width: 100%;
+  text-align: left;
   cursor: pointer;
-  height: 35px;
-  font-weight: bold;
+  display: block;
 }
 
-.create-btn:hover {
-  opacity: 0.8;
+.content-container {
+  display: flex;
+  flex: 1;
+  gap: 1.5rem;
+  padding: 2rem;
+  overflow: hidden;
 }
 
-.products-container {
+.main-content {
+  height: 100%;
+  flex: 1;
+  background-color: var(--secondary-color);
+  border-radius: 20px;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  margin: 0;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.search-container input {
+  flex: 1;
+  min-width: 200px;
+  height: 45px;
+  border: none;
+  padding: 0 1rem;
+  background-color: #f3f4f6;
+  outline: none;
+  font-size: 0.9375rem;
+}
+
+.search-btn {
+  height: 45px;
+  background-color: #f3f4f6;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.search-btn img {
+  height: 25px;
+  width: 25px;
+}
+
+.products-list {
   display: flex;
   flex-direction: column;
-  background-color: var(--secondary-color);
-  border-radius: 15px;
-  min-height: 400px;
-  margin-top: 50px;
-}
-
-.product-header {
-  display: flex;
-  justify-content: start;
-}
-
-.product-header h3 {
-  padding: 0 30px;
+  gap: 1rem;
 }
 
 .product-card {
-  background-color: var(--product-card-color);
-  border-radius: 5px;
-  margin: 0 50px 10px 50px;
-  height: 60px;
+  display: flex;
+  align-items: center;
+  background-color: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.product-card:hover {
+  background-color: var(--card-bg-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.product-icon img {
+  background-color: var(--bg-color);
+  height: 20px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.product-info-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.product-code {
+  font-size: 0.9375rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.project-name {
+  display: inline-block;
+  padding: 0.2rem 0.8rem;
+  background-color: #9ca3af;
+  color: white;
+  border-radius: 12px;
+}
+
+.sidebar {
+  height: 100%;
+  width: 240px;
+  background-color: var(--secondary-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    0 12px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar-title {
+  font-size: 1.2rem;
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--secondary-color);
+  border: 1px solid var(--card-bg-color);
+  border-radius: 10px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.action-btn span {
+  font-size: 1rem;
+}
+
+.action-btn:hover {
+  background-color: #e5e7eb;
+  transform: translateX(-2px);
+}
+
+@media (max-width: 1024px) {
+  .content-container {
+    flex-direction: column;
+  }
+
+  .quick-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-container {
+    width: 100%;
+  }
+
+  .quick-actions {
+    flex-direction: column;
+  }
 }
 </style>

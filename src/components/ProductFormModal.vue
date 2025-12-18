@@ -3,74 +3,77 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Cadastrar Produto</h2>
+        <button type="button" @click="$emit('cancel')">×</button>
       </div>
 
-      <form @submit.prevent="handleSubmit">
-        <div class="input-field">
-          <label for="productType">Tipo de produto</label>
-          <select id="productType" v-model="selectedProductTypeId">
-            <option value="">Selecione o tipo</option>
-            <option
-              v-for="productType in productTypes"
-              :key="productType.id"
-              :value="productType.id"
-            >
-              {{ productType.name }}
-            </option>
-          </select>
-        </div>
+      <div class="modal-body">
+        <form @submit.prevent="handleSubmit">
+          <div class="input-field">
+            <label for="productType">Tipo de produto</label>
+            <select id="productType" v-model="selectedProductTypeId">
+              <option value="">Selecione o tipo</option>
+              <option
+                v-for="productType in productTypes"
+                :key="productType.id"
+                :value="productType.id"
+              >
+                {{ productType.name }}
+              </option>
+            </select>
+          </div>
 
-        <div class="input-field">
-          <label for="nup">NUP</label>
-          <input type="number" id="nup" v-model="nup" />
-        </div>
+          <div class="input-field">
+            <label for="nup">NUP</label>
+            <input type="number" id="nup" v-model="nup" />
+          </div>
 
-        <div class="input-field">
-          <label for="serialNumber">Serial</label>
-          <input type="number" id="serialNumber" v-model="serialNumber" />
-        </div>
+          <div class="input-field">
+            <label for="serialNumber">Serial</label>
+            <input type="number" id="serialNumber" v-model="serialNumber" />
+          </div>
 
-        <div class="input-field">
-          <label for="modem">Modem</label>
-          <input type="text" id="modem" v-model="modem" />
-        </div>
+          <div class="input-field">
+            <label for="modem">Modem</label>
+            <input type="text" id="modem" v-model="modem" />
+          </div>
 
-        <div class="input-field">
-          <label for="imei">imei</label>
-          <input type="text" id="imei" v-model="imei" />
-        </div>
+          <div class="input-field">
+            <label for="imei">imei</label>
+            <input type="text" id="imei" v-model="imei" />
+          </div>
 
-        <div class="input-field">
-          <label for="firmwareVersion">Versão de firmware</label>
-          <input type="text" id="firmwareVersion" v-model="firmwareVersion" />
-        </div>
+          <div class="input-field">
+            <label for="firmwareVersion">Versão de firmware</label>
+            <input type="text" id="firmwareVersion" v-model="firmwareVersion" />
+          </div>
 
-        <div class="input-field">
-          <label for="productionDate">Data</label>
-          <input type="date" id="productionDate" v-model="productionDate" />
-        </div>
+          <div class="input-field">
+            <label for="productionDate">Data</label>
+            <input type="date" id="productionDate" v-model="productionDate" />
+          </div>
 
-        <div class="input-field">
-          <label for="batchNumber">Lote</label>
-          <input type="number" id="batchNumber" v-model="batchNumber" />
-        </div>
+          <div class="input-field">
+            <label for="batchNumber">Lote</label>
+            <input type="number" id="batchNumber" v-model="batchNumber" />
+          </div>
 
-        <div class="input-field">
-          <label for="producerName">Nome do responsável</label>
-          <input type="text" id="producerName" v-model="producerName" />
-        </div>
+          <div class="input-field">
+            <label for="producerName">Nome do responsável</label>
+            <input type="text" id="producerName" v-model="producerName" />
+          </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-cancel" @click="$emit('cancel')">Cancelar</button>
-          <button type="submit" class="btn-submit">Salvar</button>
-        </div>
-      </form>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" @click="$emit('cancel')">Cancelar</button>
+            <button type="submit" class="btn-submit">Salvar</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { getProductType } from '@/services/productTypeService.js'
 import { createProduct } from '@/services/productService.js'
 
@@ -124,23 +127,26 @@ async function handleSubmit() {
 
 <style scoped>
 .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 9999;
 }
 
 .modal-content {
+  display: flex;
+  flex-direction: column;
   background-color: white;
   border-radius: 10px;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
+  max-height: 90vh;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
@@ -156,6 +162,12 @@ async function handleSubmit() {
 .modal-header h2 {
   color: var(--bg-color);
   margin: 0;
+}
+
+.modal-body {
+  overflow-y: auto;
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  flex: 1;
 }
 
 .input-field {
