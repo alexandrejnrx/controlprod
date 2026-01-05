@@ -12,7 +12,7 @@
         </div>
 
         <div class="input-field">
-          <label for="clientId">Cliente do Projeto</label>
+          <label for="clientId">Parceiro do Projeto</label>
           <select id="clientId" v-model="selectedClientId">
             <option value="">Selecione um cliente</option>
             <option v-for="client in clients" :key="client.id" :value="client.id">

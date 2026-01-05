@@ -1,78 +1,89 @@
 <template>
-  <div class="container">
+  <div class="home-container" @click.self="closeSideBar">
     <header class="header-container">
       <h1>ControlProd</h1>
-      <div class="profile-menu">
-        <div class="profile-toggle" @click="toggleProfileMenu">Perfil</div>
-        <ul v-show="showProfileMenu" class="dropdown">
-          <li><a>Meu Perfil</a></li>
-          <li><a class="profile-btn" @click="logout">Sair</a></li>
-        </ul>
+      <div class="menu" @click="toggleSideBar">
+        <button class="menu-toggle">
+          <img src="@/assets/svg/menu.svg" alt="menu" />
+        </button>
       </div>
     </header>
 
-    <div class="content-container">
-      <main class="main-content">
-        <section>
-          <div class="section-header">
-            <h2 class="section-title">Controle de Produção</h2>
-            <div class="search-container">
-              <input type="text" placeholder="Buscar..." />
-              <button class="search-btn">
-                <img src="@/assets/svg/search.svg" alt="buscar" />
-              </button>
-            </div>
+    <section class="content-container">
+      <div class="section-header">
+        <h2>Controle de Produção</h2>
+        <div class="search-container">
+          <input type="text" placeholder="Buscar..." />
+          <button class="search-btn">
+            <img src="@/assets/svg/search.svg" alt="buscar" />
+          </button>
+        </div>
+      </div>
+
+      <div class="products-list">
+        <div
+          class="product-card"
+          v-for="productType in productTypes"
+          :key="productType.id"
+          @click="goToProcution(productType.id)"
+        >
+          <div class="product-icon">
+            <img src="@/assets/svg/productsCard.svg" alt="icone produto" />
           </div>
 
-          <div class="products-list">
-            <div
-              class="product-card"
-              v-for="product in products"
-              :key="product.id"
-              @click="goToProductsDetails(product.productType.id)"
-            >
-              <div class="product-icon">
-                <img src="@/assets/svg/products.svg" alt="icone produto" />
-              </div>
-
-              <div class="product-info">
-                <div class="product-info-title">
-                  <span class="product-code">{{ product.productType.internalCode }}</span>
-                  <span class="project-name">{{ product.productType.project.name }}</span>
-                </div>
-                <h3 class="product-name">{{ product.productType.name }}</h3>
-              </div>
+          <div class="product-info">
+            <div class="product-info-title">
+              <span class="product-code">{{ productType.internalCode }}</span>
+              <span class="project-name">{{ productType.project.name }}</span>
             </div>
+            <h3 class="product-name">{{ productType.name }}</h3>
+            <!--            <div class="produced">-->
+            <!--              <span>{{productTypes}}</span>-->
+            <!--            </div>-->
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
+    </section>
 
-      <aside class="sidebar">
-        <h2 class="sidebar-title">Ações Rápidas</h2>
-        <nav class="quick-actions" aria-label="Ações de cadastro">
-          <button class="action-btn" @click="openClientModal">
-            <span>Clientes</span>
-          </button>
+    <aside class="right-aside" v-show="showSideBar">
+      <div class="profile-container">
+        <div class="icon-container">
+          <span class="user-icon">
+            <img src="@/assets/svg/profile.svg" alt="imagem do usuário" />
+          </span>
+        </div>
+        <span class="name">Nome do Usuário</span>
+      </div>
 
-          <button class="action-btn" @click="openProjectModal">
-            <span>Projetos</span>
-          </button>
+      <h2 class="aside-title">Opções</h2>
+      <nav class="aside-nav">
+        <button class="action-btn" @click="openPartnersModal">
+          <span>Parceiros</span>
+          <span class="partners-icon">
+            <img src="@/assets/svg/partners.svg" alt="logo parceiros" />
+          </span>
+        </button>
 
-          <button class="action-btn" @click="openProductTypeModal">
-            <span>Tipos de produto</span>
-          </button>
+        <button class="action-btn" @click="openProjectModal">
+          <span>Projetos</span>
+          <span class="partners-icon">
+            <img src="@/assets/svg/project.svg" alt="logo projetos" />
+          </span>
+        </button>
 
-          <button class="action-btn" @click="openProductModal">
-            <span>Produtos</span>
-          </button>
-        </nav>
-      </aside>
-    </div>
+        <button class="action-btn" @click="openProductTypeModal">
+          <span>Produtos</span>
+          <span class="partners-icon">
+            <img src="@/assets/svg/products.svg" alt="logo produtos" />
+          </span>
+        </button>
+      </nav>
+    </aside>
 
-    <ClientFormModal
-      v-if="showClientModal"
-      @cancel="showClientModal = false"
-      @success="showClientModal = false"
+    <PartnersFormModal
+      v-if="showPartnersModal"
+      @cancel="showPartnersModal = false"
+      @success="showPartnersModal = false"
     />
 
     <ProjectFormModal
@@ -86,62 +97,37 @@
       @cancel="showProductTypeModal = false"
       @success="showProductTypeModal = false"
     />
-
-    <ProductFormModal
-      v-if="showProductModal"
-      @cancel="showProductModal = false"
-      @success="handleProductSuccess"
-    />
   </div>
 </template>
 
 <script setup>
-import { logout } from '@/services/homeService.js'
 import { onMounted, ref } from 'vue'
-import ClientFormModal from '@/components/ClientFormModal.vue'
+import PartnersFormModal from '@/components/PartnersFormModal.vue'
+import { getProductType } from '@/services/productTypeService.js'
 import ProjectFormModal from '@/components/ProjectFormModal.vue'
 import ProductTypeFormModal from '@/components/ProductTypeFormModal.vue'
-import ProductFormModal from '@/components/ProductFormModal.vue'
-import { getProduct } from '@/services/productService.js'
-import { useRouter } from 'vue-router'
+import router from '@/router/index.js'
 
-const showClientModal = ref(false)
+const productTypes = ref([])
+const showSideBar = ref(false)
+const showPartnersModal = ref(false)
 const showProjectModal = ref(false)
 const showProductTypeModal = ref(false)
-const showProductModal = ref(false)
-const products = ref([])
-const showProfileMenu = ref(false)
-const router = useRouter()
-
-function goToProductsDetails(productTypeId) {
-  router.push({
-    name: 'products-details',
-    params: { productTypeId },
-  })
-}
-
-function toggleProfileMenu() {
-  showProfileMenu.value = !showProfileMenu.value
-}
-
-async function loadProducts() {
-  const response = await getProduct()
-  if (response.success) {
-    products.value = response.data
-  }
-}
 
 onMounted(async () => {
-  await loadProducts()
+  await loadProductTypes()
 })
 
-async function handleProductSuccess() {
-  showProductModal.value = false
-  await loadProducts()
+function toggleSideBar() {
+  showSideBar.value = !showSideBar.value
 }
 
-function openClientModal() {
-  showClientModal.value = true
+function closeSideBar() {
+  showSideBar.value = false
+}
+
+function openPartnersModal() {
+  showPartnersModal.value = true
 }
 
 function openProjectModal() {
@@ -152,114 +138,66 @@ function openProductTypeModal() {
   showProductTypeModal.value = true
 }
 
-function openProductModal() {
-  showProductModal.value = true
+function goToProcution(productTypeId) {
+  router.push({
+    name: 'production',
+    params: { productTypeId },
+  })
+}
+
+async function loadProductTypes() {
+  const response = await getProductType()
+  if (response.success) {
+    productTypes.value = response.data
+  }
 }
 </script>
 
 <style scoped>
-.container {
-  min-height: 100vh;
+.home-container {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .header-container {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
-  background-color: var(--secondary-color);
-  padding: 0 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 8vh;
+  background-color: #ffffffff;
+  padding: 0 1rem;
 }
 
-h1 {
-  color: var(--bg-color);
-  margin: 0;
-}
-
-.product-name {
-  font-size: 1rem;
-  margin: 0;
-}
-
-.profile-menu {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.profile-toggle {
-  display: flex;
-  align-items: center;
-}
-
-.dropdown {
-  position: absolute;
-  top: 50px;
-  right: 0;
-  background-color: white;
-  border-radius: 8px;
-  list-style: none;
-  padding: 0.5rem;
-  margin: 0;
-  box-shadow:
-    0 8px 16px rgba(0, 0, 0, 0.3),
-    0 12px 40px rgba(0, 0, 0, 0.1);
-  min-width: 150px;
-}
-
-.dropdown li {
-  margin: 0;
-  padding: 0.5rem 0.8rem;
-  border-radius: 5px;
-  transition: background-color 0.2s;
-}
-
-.dropdown li:hover {
-  background-color: var(--card-bg-color);
-}
-
-.dropdown a,
-.dropdown button {
+.menu-toggle {
   border: none;
-  width: 100%;
-  text-align: left;
+  background-color: #ffffffff;
   cursor: pointer;
-  display: block;
+  padding: 0;
+}
+
+.menu-toggle:active {
+  background-color: #eeeeee;
+  border-radius: 50%;
 }
 
 .content-container {
   display: flex;
-  flex: 1;
-  gap: 1.5rem;
-  padding: 2rem;
-  overflow: hidden;
+  flex-direction: column;
+  min-height: 250px;
+  background-color: #ffffffff;
+  margin: 1.5rem;
+  border-radius: 5px;
+  overflow-y: auto;
 }
 
-.main-content {
-  height: 100%;
-  flex: 1;
-  background-color: var(--secondary-color);
-  border-radius: 20px;
-  padding: 2rem;
-  overflow-y: auto;
+.section-header h2 {
+  margin: 1rem 0 0 1rem;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  gap: 1rem;
-}
-
-.section-header h2 {
-  margin: 0;
 }
 
 .search-container {
@@ -269,17 +207,15 @@ h1 {
   border-radius: 10px;
   overflow: hidden;
   background-color: #f3f4f6;
+  margin: 1rem 1rem 0 0;
 }
 
 .search-container input {
-  flex: 1;
   min-width: 200px;
   height: 45px;
   border: none;
   padding: 0 1rem;
-  background-color: #f3f4f6;
   outline: none;
-  font-size: 0.9375rem;
 }
 
 .search-btn {
@@ -291,144 +227,92 @@ h1 {
   align-items: center;
 }
 
-.search-btn img {
-  height: 25px;
-  width: 25px;
-}
-
 .products-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  padding: 1rem;
 }
 
 .product-card {
   display: flex;
   align-items: center;
-  background-color: var(--secondary-color);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border: 1px solid #eeeeee;
+  border-radius: 5px;
   padding: 1rem;
-  gap: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
+  gap: 10px;
+  margin: 10px;
 }
 
 .product-card:hover {
-  background-color: var(--card-bg-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+  background-color: #eeeeee;
+  transition: all 0.3s;
 }
 
-.product-icon img {
-  background-color: var(--bg-color);
-  height: 20px;
-  padding: 12px;
-  border-radius: 8px;
+.product-name {
+  font-size: 1rem;
+  margin: 0;
 }
 
-.product-info {
+.right-aside {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  flex: 1;
-  min-width: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background-color: #ffffffff;
+  width: 250px;
+  border-left: 1px solid var(--border-color);
+  overflow-y: auto;
 }
 
-.product-info-title {
+.profile-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  margin-top: 1rem;
 }
 
-.product-code {
-  font-size: 0.9375rem;
-  color: #9ca3af;
-  font-weight: 500;
+.icon-container {
+  background-color: #eeeeee;
+  border-radius: 50%;
+  padding: 1rem;
 }
 
-.project-name {
-  display: inline-block;
-  padding: 0.2rem 0.8rem;
-  background-color: #9ca3af;
-  color: white;
-  border-radius: 12px;
+.user-icon img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
 }
 
-.sidebar {
+.name {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.aside-title {
+  display: flex;
+  justify-content: right;
+  flex-direction: column;
+  margin: 0 0 1.5rem 0;
+}
+
+.aside-nav {
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  width: 240px;
-  background-color: var(--secondary-color);
-  border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow:
-    0 8px 16px rgba(0, 0, 0, 0.3),
-    0 12px 40px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.sidebar-title {
-  font-size: 1.2rem;
-  margin: 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--border-color);
-}
-
-.quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background-color: var(--secondary-color);
-  border: 1px solid var(--card-bg-color);
-  border-radius: 10px;
-  padding: 1rem;
+  padding: 1rem 1rem;
+  background-color: #ffffffff;
   cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
-}
-
-.action-btn span {
-  font-size: 1rem;
+  border: none;
+  gap: 1rem;
 }
 
 .action-btn:hover {
   background-color: #e5e7eb;
-  transform: translateX(-2px);
-}
-
-@media (max-width: 1024px) {
-  .content-container {
-    flex-direction: column;
-  }
-
-  .quick-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 640px) {
-  .section-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-container {
-    width: 100%;
-  }
-
-  .quick-actions {
-    flex-direction: column;
-  }
 }
 </style>

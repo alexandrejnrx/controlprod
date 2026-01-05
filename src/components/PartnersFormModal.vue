@@ -2,17 +2,17 @@
   <div class="container">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Cadastrar Cliente</h2>
+        <h2>Cadastrar Parceiro</h2>
       </div>
 
       <form @submit.prevent="handleSubmit">
         <div class="input-field">
-          <label for="clientName">Nome do Cliente</label>
+          <label for="clientName">Nome</label>
           <input type="text" id="clientName" v-model="clientName" />
         </div>
 
         <div class="input-field">
-          <label for="clientType">Tipo de Cliente</label>
+          <label for="clientType">Tipo de Parceiro</label>
           <select id="clientType" v-model="clientType">
             <option value="">Selecione um tipo</option>
             <option value="INTERNAL">Interno</option>
