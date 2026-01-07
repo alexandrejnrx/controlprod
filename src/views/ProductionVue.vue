@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container" @click.self="closeSideBar">
+  <div class="home-container">
     <header class="header-container">
       <h1>ControlProd</h1>
       <div class="menu" @click="toggleSideBar">
@@ -10,7 +10,17 @@
     </header>
 
     <section class="content-container">
-      <table class="production-table">
+      <div v-if="products.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <img src="@/assets/svg/products.svg" alt="sem equipamentos" />
+        </div>
+        <h3>Nenhum equipamento cadastrado</h3>
+        <button class="btn-add-product" @click="handleMenuAction('openProductModal')">
+          Cadastrar Equipamento
+        </button>
+      </div>
+
+      <table v-else class="production-table">
         <thead>
           <tr>
             <th class="border-left">NUP</th>
@@ -95,46 +105,44 @@
       </table>
     </section>
 
-    <aside class="right-aside" v-show="showSideBar">
-      <div class="profile-container">
-        <div class="icon-container">
-          <span class="user-icon">
-            <img src="@/assets/svg/profile.svg" alt="imagem do usuário" />
-          </span>
-        </div>
-        <span class="name">Nome do Usuário</span>
-      </div>
-
-      <h2 class="aside-title">Opções</h2>
-      <nav class="aside-nav">
-        <button class="action-btn" @click="openProductModal">
-          <span>Cadastrar Equipamentos</span>
-          <span class="partners-icon">
-            <img src="@/assets/svg/products.svg" alt="logo produtos" />
-          </span>
-        </button>
-      </nav>
-    </aside>
+    <SidebarMenu
+      :isVisible="showSideBar"
+      :menuItems="sidebarMenuItems"
+      @menu-action="handleMenuAction"
+      @close="closeSideBar"
+    />
 
     <ProductFormModal
       v-if="showProductModal"
       @cancel="showProductModal = false"
-      @success="showProductModal = false"
+      @success="handleProductSuccess"
     />
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { getProduct } from '@/services/productService.js'
 import ProductFormModal from '@/components/ProductFormModal.vue'
-import { useRoute } from 'vue-router'
+import SidebarMenu from '@/components/SidebarMenu.vue'
 import api from '@/services/api.js'
+
+import productsIcon from '@/assets/svg/products.svg'
 
 const route = useRoute()
 const products = ref([])
 const showSideBar = ref(false)
 const showProductModal = ref(false)
+
+const sidebarMenuItems = [
+  {
+    id: 'register-equipment',
+    label: 'Cadastrar Equipamentos',
+    icon: productsIcon,
+    action: 'openProductModal',
+  },
+]
 
 onMounted(async () => {
   await loadProducts()
@@ -148,8 +156,16 @@ function closeSideBar() {
   showSideBar.value = false
 }
 
-function openProductModal() {
-  showProductModal.value = true
+function handleMenuAction(action) {
+  const actions = {
+    openProductModal: () => {
+      showProductModal.value = true
+    },
+  }
+
+  if (actions[action]) {
+    actions[action]()
+  }
 }
 
 async function loadProducts() {
@@ -161,6 +177,11 @@ async function loadProducts() {
       (product) => product.productType.id === parseInt(productTypeId),
     )
   }
+}
+
+async function handleProductSuccess() {
+  showProductModal.value = false
+  await loadProducts()
 }
 
 async function updateField(productId, fieldName, value) {
@@ -227,79 +248,12 @@ async function updateField(productId, fieldName, value) {
   border-radius: 50%;
 }
 
-.section-header h2 {
-  margin: 0;
-}
-
-.right-aside {
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  background-color: #ffffffff;
-  width: 250px;
-  border-left: 1px solid var(--border-color);
-  overflow-y: auto;
-}
-
-.profile-container {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 1rem;
-}
-
-.icon-container {
-  background-color: #eeeeee;
-  border-radius: 50%;
-  padding: 1rem;
-}
-
-.user-icon img {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-}
-
-.name {
-  text-align: center;
-  padding: 0.5rem;
-}
-
-.aside-title {
-  display: flex;
-  justify-content: right;
-  flex-direction: column;
-  margin: 0 0 1.5rem 0;
-}
-
-.aside-nav {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  padding: 1rem 1rem;
-  background-color: #ffffffff;
-  cursor: pointer;
-  border: none;
-  gap: 1rem;
-}
-
-.action-btn:hover {
-  background-color: #e5e7eb;
-}
-
 .content-container {
   display: flex;
   justify-content: center;
-  margin: 1rem;
+  min-height: 400px;
+  margin: 1.5rem;
+  border-radius: 5px;
 }
 
 .production-table {
@@ -307,6 +261,8 @@ async function updateField(productId, fieldName, value) {
   background-color: #ffffffff;
   border-radius: 20px;
   border-collapse: collapse;
+  height: 100px;
+  margin-top: 1rem;
 }
 
 .production-table thead {
@@ -338,5 +294,48 @@ async function updateField(productId, fieldName, value) {
 .editable-cell:focus {
   outline: none;
   border-color: var(--border-color);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1rem;
+  text-align: center;
+  min-height: 400px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+}
+
+.empty-icon {
+  opacity: 0.3;
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon img {
+  width: 80px;
+  height: 80px;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.btn-add-product {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--btn-primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.btn-add-product:hover {
+  opacity: 0.9;
 }
 </style>

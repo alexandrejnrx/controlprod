@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container" @click.self="closeSideBar">
+  <div class="home-container">
     <header class="header-container">
       <h1>ControlProd</h1>
       <div class="menu" @click="toggleSideBar">
@@ -21,7 +21,18 @@
       </div>
 
       <div class="products-list">
+        <div v-if="productTypes.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <img src="@/assets/svg/productsCard.svg" alt="sem produtos" />
+          </div>
+          <h3>Nenhum produto cadastrado</h3>
+          <button class="btn-add-product" @click="handleMenuAction('openProductTypeModal')">
+            Cadastrar Produto
+          </button>
+        </div>
+
         <div
+          v-else
           class="product-card"
           v-for="productType in productTypes"
           :key="productType.id"
@@ -37,65 +48,35 @@
               <span class="project-name">{{ productType.project.name }}</span>
             </div>
             <h3 class="product-name">{{ productType.name }}</h3>
-            <!--            <div class="produced">-->
-            <!--              <span>{{productTypes}}</span>-->
-            <!--            </div>-->
           </div>
         </div>
       </div>
     </section>
 
-    <aside class="right-aside" v-show="showSideBar">
-      <div class="profile-container">
-        <div class="icon-container">
-          <span class="user-icon">
-            <img src="@/assets/svg/profile.svg" alt="imagem do usuário" />
-          </span>
-        </div>
-        <span class="name">Nome do Usuário</span>
-      </div>
-
-      <h2 class="aside-title">Opções</h2>
-      <nav class="aside-nav">
-        <button class="action-btn" @click="openPartnersModal">
-          <span>Parceiros</span>
-          <span class="partners-icon">
-            <img src="@/assets/svg/partners.svg" alt="logo parceiros" />
-          </span>
-        </button>
-
-        <button class="action-btn" @click="openProjectModal">
-          <span>Projetos</span>
-          <span class="partners-icon">
-            <img src="@/assets/svg/project.svg" alt="logo projetos" />
-          </span>
-        </button>
-
-        <button class="action-btn" @click="openProductTypeModal">
-          <span>Produtos</span>
-          <span class="partners-icon">
-            <img src="@/assets/svg/products.svg" alt="logo produtos" />
-          </span>
-        </button>
-      </nav>
-    </aside>
+    <SidebarMenu
+      :isVisible="showSideBar"
+      :userName="userName"
+      :menuItems="sidebarMenuItems"
+      @menu-action="handleMenuAction"
+      @close="closeSideBar"
+    />
 
     <PartnersFormModal
       v-if="showPartnersModal"
       @cancel="showPartnersModal = false"
-      @success="showPartnersModal = false"
+      @success="handlePartnersSuccess"
     />
 
     <ProjectFormModal
       v-if="showProjectModal"
       @cancel="showProjectModal = false"
-      @success="showProjectModal = false"
+      @success="handleProjectSuccess"
     />
 
     <ProductTypeFormModal
       v-if="showProductTypeModal"
       @cancel="showProductTypeModal = false"
-      @success="showProductTypeModal = false"
+      @success="handleProductTypeSuccess"
     />
   </div>
 </template>
@@ -103,16 +84,52 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import PartnersFormModal from '@/components/PartnersFormModal.vue'
-import { getProductType } from '@/services/productTypeService.js'
 import ProjectFormModal from '@/components/ProjectFormModal.vue'
 import ProductTypeFormModal from '@/components/ProductTypeFormModal.vue'
+import SidebarMenu from '@/components/SidebarMenu.vue'
+import { getProductType } from '@/services/productTypeService.js'
 import router from '@/router/index.js'
+import partnersIcon from '@/assets/svg/partners.svg'
+import projectIcon from '@/assets/svg/project.svg'
+import productsIcon from '@/assets/svg/products.svg'
+import { getCurrentUser } from '@/services/userService.js'
 
+const userName = ref('Carregando...')
 const productTypes = ref([])
 const showSideBar = ref(false)
 const showPartnersModal = ref(false)
 const showProjectModal = ref(false)
 const showProductTypeModal = ref(false)
+
+const sidebarMenuItems = [
+  {
+    id: 'partners',
+    label: 'Parceiros',
+    icon: partnersIcon,
+    action: 'openPartnersModal',
+  },
+  {
+    id: 'projects',
+    label: 'Projetos',
+    icon: projectIcon,
+    action: 'openProjectModal',
+  },
+  {
+    id: 'products',
+    label: 'Produtos',
+    icon: productsIcon,
+    action: 'openProductTypeModal',
+  },
+]
+
+onMounted(async () => {
+  const result = await getCurrentUser()
+  if (result.success) {
+    userName.value = result.data.name
+  } else {
+    userName.value = 'Usuário'
+  }
+})
 
 onMounted(async () => {
   await loadProductTypes()
@@ -126,16 +143,22 @@ function closeSideBar() {
   showSideBar.value = false
 }
 
-function openPartnersModal() {
-  showPartnersModal.value = true
-}
+function handleMenuAction(action) {
+  const actions = {
+    openPartnersModal: () => {
+      showPartnersModal.value = true
+    },
+    openProjectModal: () => {
+      showProjectModal.value = true
+    },
+    openProductTypeModal: () => {
+      showProductTypeModal.value = true
+    },
+  }
 
-function openProjectModal() {
-  showProjectModal.value = true
-}
-
-function openProductTypeModal() {
-  showProductTypeModal.value = true
+  if (actions[action]) {
+    actions[action]()
+  }
 }
 
 function goToProcution(productTypeId) {
@@ -150,6 +173,19 @@ async function loadProductTypes() {
   if (response.success) {
     productTypes.value = response.data
   }
+}
+
+async function handlePartnersSuccess() {
+  showPartnersModal.value = false
+}
+
+async function handleProjectSuccess() {
+  showProjectModal.value = false
+}
+
+async function handleProductTypeSuccess() {
+  showProductTypeModal.value = false
+  await loadProductTypes()
 }
 </script>
 
@@ -239,6 +275,7 @@ async function loadProductTypes() {
   padding: 1rem;
   gap: 10px;
   margin: 10px;
+  cursor: pointer;
 }
 
 .product-card:hover {
@@ -246,73 +283,54 @@ async function loadProductTypes() {
   transition: all 0.3s;
 }
 
+.product-info-title {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
 .product-name {
   font-size: 1rem;
   margin: 0;
 }
 
-.right-aside {
+.empty-state {
   display: flex;
   flex-direction: column;
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  background-color: #ffffffff;
-  width: 250px;
-  border-left: 1px solid var(--border-color);
-  overflow-y: auto;
-}
-
-.profile-container {
-  display: flex;
   align-items: center;
-  flex-direction: column;
-  margin-top: 1rem;
-}
-
-.icon-container {
-  background-color: #eeeeee;
-  border-radius: 50%;
-  padding: 1rem;
-}
-
-.user-icon img {
-  display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100px;
-}
-
-.name {
-  text-align: center;
-  padding: 0.5rem;
-}
-
-.aside-title {
-  display: flex;
-  justify-content: right;
-  flex-direction: column;
-  margin: 0 0 1.5rem 0;
-}
-
-.aside-nav {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
   padding: 1rem 1rem;
-  background-color: #ffffffff;
-  cursor: pointer;
-  border: none;
-  gap: 1rem;
+  text-align: center;
+  min-height: 300px;
 }
 
-.action-btn:hover {
-  background-color: #e5e7eb;
+.empty-icon {
+  opacity: 0.3;
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon img {
+  width: 80px;
+  height: 80px;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.btn-add-product {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--btn-primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.btn-add-product:hover {
+  opacity: 0.9;
 }
 </style>

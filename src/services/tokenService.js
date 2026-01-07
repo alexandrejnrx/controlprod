@@ -2,14 +2,14 @@ const tokenKey = 'auth_token'
 
 export const tokenService = {
   saveToken(token) {
-    localStorage.setItem(tokenKey, token)
+    sessionStorage.setItem(tokenKey, token)
   },
 
   getToken() {
-    return localStorage.getItem(tokenKey)
+    return sessionStorage.getItem(tokenKey)
   },
 
   removeToken() {
-    localStorage.removeItem(tokenKey)
+    sessionStorage.removeItem(tokenKey)
   },
 }
