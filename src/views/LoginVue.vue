@@ -81,17 +81,17 @@ function clearFields() {
 .login-container {
   width: 100%;
   max-width: 350px;
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
   border-radius: 10px;
   overflow: hidden;
+  border: 1px solid #d0d0d0;
 }
 
 .login-content {
-  padding: 0.25rem 0.5rem 0 0.5rem;
+  padding: 4px 8px 0 8px;
 }
 
 h2 {
-  color: var(--bg-color);
   text-align: center;
   margin: 0 0 1rem 0;
   font-size: 1.5rem;
@@ -103,7 +103,6 @@ h2 {
 }
 
 .input-field label {
-  color: var(--bg-color);
   margin: 0.5rem 0 0.5rem 0;
 }
 
@@ -112,9 +111,6 @@ h2 {
   outline: none;
   border-bottom: 1px solid var(--border-color);
   padding: 0.75rem 0.5rem;
-  font-size: 1rem;
-  background-color: transparent;
-  transition: opacity 0.2s;
 }
 
 .input-field input:disabled {
@@ -130,7 +126,7 @@ h2 {
 .login-btn {
   color: var(--bg-color);
   border: none;
-  background-color: var(--secondary-color);
+  background-color: #000000ff;
   cursor: pointer;
   width: 100%;
   font-weight: bold;
@@ -139,8 +135,7 @@ h2 {
 }
 
 .login-btn:hover:not(:disabled) {
-  background-color: #f2e9ff;
-  opacity: 0.9;
+  opacity: 0.6;
 }
 
 .login-btn:disabled {

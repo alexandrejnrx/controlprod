@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-color: #a358e8;
-  --secondary-color: #FFFFFFFF;
-  --btn-primary-color: #60a852;
-  --product-card-color: #EEEEEE;
-  --btn-secondary-color: #f16d6d;
+  --primary-color: #FFFFFF;
+  --bg-color: #FFFFFF;
+  --text-color: #a358e8;
   --border-color: #d0d0d0;
-  --card-bg-color: #e5e7eb;
+  --product-card-color: #EEEEEE;
+  /*--btn-primary-color: #60a852;*/
+  /*--btn-secondary-color: #f16d6d;*/
+  /*--card-bg-color: #e5e7eb;*/
 
   --font-size-base: 1rem;
   --font-family: 'Inter', sans-serif;
