@@ -9,9 +9,9 @@
       </div>
     </header>
 
-    <section class="content-container">
+    <section class="section-container">
       <div class="section-header">
-        <h2>Controle de Produção</h2>
+        <h2>Produtos</h2>
         <div class="search-container">
           <input type="text" placeholder="Buscar..." />
           <button class="search-btn">
@@ -36,7 +36,7 @@
           class="product-card"
           v-for="productType in productTypes"
           :key="productType.id"
-          @click="goToProcution(productType.id)"
+          @click="goToProcution(productType.id, productType.name)"
         >
           <div class="product-icon">
             <img src="@/assets/svg/productsCard.svg" alt="icone produto" />
@@ -161,10 +161,13 @@ function handleMenuAction(action) {
   }
 }
 
-function goToProcution(productTypeId) {
+function goToProcution(productTypeId, productTypeName) {
   router.push({
     name: 'production',
-    params: { productTypeId },
+    params: {
+      productTypeId,
+      productTypeName,
+    },
   })
 }
 
@@ -194,6 +197,7 @@ async function handleProductTypeSuccess() {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: #e5e7eb;
 }
 
 .header-container {
@@ -201,23 +205,24 @@ async function handleProductTypeSuccess() {
   justify-content: space-between;
   align-items: center;
   height: 8vh;
-  background-color: #ffffffff;
   padding: 0 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--primary-color);
 }
 
 .menu-toggle {
-  border: none;
-  background-color: #ffffffff;
   cursor: pointer;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border: none;
   padding: 0;
 }
 
-.menu-toggle:active {
+.menu-toggle:hover {
   background-color: #eeeeee;
-  border-radius: 50%;
 }
 
-.content-container {
+.section-container {
   display: flex;
   flex-direction: column;
   min-height: 250px;
@@ -225,25 +230,29 @@ async function handleProductTypeSuccess() {
   margin: 1.5rem;
   border-radius: 5px;
   overflow-y: auto;
+  border: 1px solid var(--border-color);
 }
 
 .section-header h2 {
-  margin: 1rem 0 0 1rem;
+  display: flex;
+  align-items: center;
+  margin: 0;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px;
 }
 
 .search-container {
   display: flex;
+  justify-content: center;
   align-items: center;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   overflow: hidden;
-  background-color: #f3f4f6;
-  margin: 1rem 1rem 0 0;
 }
 
 .search-container input {
@@ -256,23 +265,19 @@ async function handleProductTypeSuccess() {
 
 .search-btn {
   height: 45px;
-  background-color: #f3f4f6;
+  background-color: var(--bg-color);
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
 }
 
-.products-list {
-  padding: 1rem;
-}
-
 .product-card {
   display: flex;
   align-items: center;
-  border: 1px solid #eeeeee;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
-  padding: 1rem;
+  padding: 10px;
   gap: 10px;
   margin: 10px;
   cursor: pointer;
@@ -281,16 +286,25 @@ async function handleProductTypeSuccess() {
 .product-card:hover {
   background-color: #eeeeee;
   transition: all 0.3s;
+  border: 1px solid #000000ff;
 }
 
 .product-info-title {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 15px;
   margin-bottom: 5px;
 }
 
+.product-code,
+.project-name {
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+}
+
 .product-name {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   margin: 0;
 }
 
@@ -301,11 +315,10 @@ async function handleProductTypeSuccess() {
   justify-content: center;
   padding: 1rem 1rem;
   text-align: center;
-  min-height: 300px;
 }
 
 .empty-icon {
-  opacity: 0.3;
+  opacity: 0.2;
   margin-bottom: 1.5rem;
 }
 
@@ -331,6 +344,6 @@ async function handleProductTypeSuccess() {
 }
 
 .btn-add-product:hover {
-  opacity: 0.9;
+  opacity: 0.6;
 }
 </style>
