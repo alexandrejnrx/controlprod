@@ -2,13 +2,12 @@
 
 :root {
   --primary-color: #FFFFFF;
-  --bg-color: #FFFFFF;
-  --text-color: #a358e8;
+  --bg-color: #e5e7eb;
+  --text-color: #FFFFFF;
   --border-color: #d0d0d0;
   --product-card-color: #EEEEEE;
-  /*--btn-primary-color: #60a852;*/
-  /*--btn-secondary-color: #f16d6d;*/
-  /*--card-bg-color: #e5e7eb;*/
+  --btn-primary-color: #000000FF;
+  --btn-secondary-color: #f16d6d;
 
   --font-size-base: 1rem;
   --font-family: 'Inter', sans-serif;
