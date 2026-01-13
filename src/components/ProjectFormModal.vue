@@ -14,7 +14,7 @@
         <div class="input-field">
           <label for="clientId">Parceiro do Projeto</label>
           <select id="clientId" v-model="selectedClientId">
-            <option value="">Selecione um cliente</option>
+            <option value="">Selecione um parceiro</option>
             <option v-for="client in clients" :key="client.id" :value="client.id">
               {{ client.name }}
             </option>
@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getClients } from '@/services/clientService.js'
+import { getPartners } from '@/services/partners.js'
 import { createProject } from '@/services/projectService.js'
 
 const emit = defineEmits(['cancel', 'success'])
@@ -52,7 +52,7 @@ const clients = ref([])
 const active = ref(true)
 
 onMounted(async () => {
-  const result = await getClients()
+  const result = await getPartners()
   if (result.success) {
     clients.value = result.data
   }
@@ -95,7 +95,7 @@ async function handleSubmit() {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--primary-color);
   border-radius: 10px;
   width: 90%;
   max-width: 500px;
@@ -112,7 +112,6 @@ async function handleSubmit() {
 }
 
 .modal-header h2 {
-  color: var(--bg-color);
   margin: 0;
 }
 
@@ -123,7 +122,6 @@ async function handleSubmit() {
 
 .input-field label {
   display: block;
-  color: var(--bg-color);
   font-weight: bold;
   margin-bottom: 8px;
 }
@@ -136,6 +134,7 @@ async function handleSubmit() {
   border-radius: 5px;
   font-size: 1rem;
   box-sizing: border-box;
+  outline: none;
 }
 
 .modal-footer {
@@ -156,12 +155,20 @@ async function handleSubmit() {
 }
 
 .btn-cancel {
-  background-color: var(--btn-secondary-color);
-  color: white;
+  background-color: #f16d6d;
+  color: var(--text-color);
+}
+
+.btn-cancel:hover {
+  opacity: 0.6;
 }
 
 .btn-submit {
   background-color: var(--btn-primary-color);
   color: white;
+}
+
+.btn-submit:hover {
+  opacity: 0.6;
 }
 </style>

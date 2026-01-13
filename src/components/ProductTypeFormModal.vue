@@ -102,7 +102,7 @@ async function handleSubmit() {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--primary-color);
   border-radius: 10px;
   width: 90%;
   max-width: 500px;
@@ -119,7 +119,6 @@ async function handleSubmit() {
 }
 
 .modal-header h2 {
-  color: var(--bg-color);
   margin: 0;
 }
 
@@ -130,7 +129,6 @@ async function handleSubmit() {
 
 .input-field label {
   display: block;
-  color: var(--bg-color);
   font-weight: bold;
   margin-bottom: 8px;
 }
@@ -143,6 +141,7 @@ async function handleSubmit() {
   border-radius: 5px;
   font-size: 1rem;
   box-sizing: border-box;
+  outline: none;
 }
 
 .modal-footer {
@@ -163,12 +162,20 @@ async function handleSubmit() {
 }
 
 .btn-cancel {
-  background-color: var(--btn-secondary-color);
-  color: white;
+  background-color: #f16d6d;
+  color: var(--text-color);
+}
+
+.btn-cancel:hover {
+  opacity: 0.6;
 }
 
 .btn-submit {
   background-color: var(--btn-primary-color);
   color: white;
+}
+
+.btn-submit:hover {
+  opacity: 0.6;
 }
 </style>

@@ -40,7 +40,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { createClient } from '@/services/clientService.js'
+import { createPartners } from '@/services/partners.js'
 
 const emit = defineEmits(['cancel', 'success'])
 
@@ -55,7 +55,7 @@ async function handleSubmit() {
     active: active.value,
   }
 
-  const result = await createClient(clientData)
+  const result = await createPartners(clientData)
 
   if (result.success) {
     emit('success')
@@ -81,11 +81,10 @@ async function handleSubmit() {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--primary-color);
   border-radius: 10px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
@@ -98,7 +97,6 @@ async function handleSubmit() {
 }
 
 .modal-header h2 {
-  color: var(--bg-color);
   margin: 0;
 }
 
@@ -109,7 +107,6 @@ async function handleSubmit() {
 
 .input-field label {
   display: block;
-  color: var(--bg-color);
   font-weight: bold;
   margin-bottom: 8px;
 }
@@ -122,6 +119,7 @@ async function handleSubmit() {
   border-radius: 5px;
   font-size: 1rem;
   box-sizing: border-box;
+  outline: none;
 }
 
 .modal-footer {
@@ -142,12 +140,20 @@ async function handleSubmit() {
 }
 
 .btn-cancel {
-  background-color: var(--btn-secondary-color);
-  color: white;
+  background-color: #f16d6d;
+  color: var(--text-color);
+}
+
+.btn-cancel:hover {
+  opacity: 0.6;
 }
 
 .btn-submit {
   background-color: var(--btn-primary-color);
   color: white;
+}
+
+.btn-submit:hover {
+  opacity: 0.6;
 }
 </style>
