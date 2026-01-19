@@ -18,9 +18,10 @@
 
       <nav class="aside-nav">
         <button
-          v-for="menuItem in menuItems"
+          v-for="(menuItem, index) in menuItems"
           :key="menuItem.id"
           class="action-btn"
+          :class="{ 'separator-top': index === menuItems.length - 1 }"
           @click="handleMenuClick(menuItem.action)"
         >
           <span>{{ menuItem.label }}</span>
@@ -166,5 +167,10 @@ function handleMenuClick(action) {
 .menu-icon img {
   width: 24px;
   height: 24px;
+}
+
+.separator-top {
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 1rem;
 }
 </style>

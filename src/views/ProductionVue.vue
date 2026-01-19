@@ -2,7 +2,7 @@
   <div class="production-container">
     <header class="header-container">
       <button class="btn-back" @click="router.push({ name: 'home' })">
-        <img src="@/assets/svg/back.svg" />
+        <img src="@/assets/svg/back.svg" alt="voltar" />
       </button>
       <h1>ControlProd</h1>
       <div class="menu" @click="toggleSideBar">
@@ -146,6 +146,8 @@ import api from '@/services/api.js'
 import productsIcon from '@/assets/svg/products.svg'
 import { getCurrentUser } from '@/services/userService.js'
 import router from '@/router/index.js'
+import logoutIcon from '@/assets/svg/logout.svg'
+import { logout } from '@/services/homeService.js'
 
 const route = useRoute()
 const userName = ref('Carregando...')
@@ -160,6 +162,12 @@ const sidebarMenuItems = [
     label: 'Cadastrar Equipamentos',
     icon: productsIcon,
     action: 'openProductModal',
+  },
+  {
+    id: 'logout',
+    label: 'Sair',
+    icon: logoutIcon,
+    action: 'logout',
   },
 ]
 
@@ -189,6 +197,9 @@ function handleMenuAction(action) {
   const actions = {
     openProductModal: () => {
       showProductModal.value = true
+    },
+    logout: () => {
+      logout()
     },
   }
 

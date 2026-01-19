@@ -92,7 +92,9 @@ import router from '@/router/index.js'
 import partnersIcon from '@/assets/svg/partners.svg'
 import projectIcon from '@/assets/svg/project.svg'
 import productsIcon from '@/assets/svg/products.svg'
+import logoutIcon from '@/assets/svg/logout.svg'
 import { getCurrentUser } from '@/services/userService.js'
+import { tokenService } from '@/services/tokenService.js'
 
 const userName = ref('Carregando...')
 const productTypes = ref([])
@@ -119,6 +121,12 @@ const sidebarMenuItems = [
     label: 'Produtos',
     icon: productsIcon,
     action: 'openProductTypeModal',
+  },
+  {
+    id: 'logout',
+    label: 'Sair',
+    icon: logoutIcon,
+    action: 'logout',
   },
 ]
 
@@ -153,6 +161,9 @@ function handleMenuAction(action) {
     },
     openProductTypeModal: () => {
       showProductTypeModal.value = true
+    },
+    logout: () => {
+      logout()
     },
   }
 
@@ -189,6 +200,11 @@ async function handleProjectSuccess() {
 async function handleProductTypeSuccess() {
   showProductTypeModal.value = false
   await loadProductTypes()
+}
+
+function logout() {
+  tokenService.removeToken()
+  router.push('/')
 }
 </script>
 
