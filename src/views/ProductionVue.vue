@@ -1,6 +1,9 @@
 <template>
-  <div class="home-container">
+  <div class="production-container">
     <header class="header-container">
+      <button class="btn-back" @click="router.push({ name: 'home' })">
+        <img src="@/assets/svg/back.svg" />
+      </button>
       <h1>ControlProd</h1>
       <div class="menu" @click="toggleSideBar">
         <button class="menu-toggle">
@@ -10,103 +13,116 @@
     </header>
 
     <section class="content-container">
-      <div v-if="products.length === 0" class="empty-state">
-        <div class="empty-icon">
-          <img src="@/assets/svg/products.svg" alt="sem equipamentos" />
+      <div class="section-header">
+        <h2>{{ productTypeName }}</h2>
+        <div class="search-container">
+          <input type="text" placeholder="Buscar..." />
+          <button class="search-btn">
+            <img src="@/assets/svg/search.svg" alt="buscar" />
+          </button>
         </div>
-        <h3>Nenhum equipamento cadastrado</h3>
-        <button class="btn-add-product" @click="handleMenuAction('openProductModal')">
-          Cadastrar Equipamento
-        </button>
       </div>
 
-      <table v-else class="production-table">
-        <thead>
-          <tr>
-            <th class="border-left">NUP</th>
-            <th>SERIAL</th>
-            <th>MODEM</th>
-            <th>IMEI</th>
-            <th>VERSÃO DE FIRMWARE</th>
-            <th>DATA DA PRODUÇÃO</th>
-            <th>LOTE</th>
-            <th class="border-right">RESPONSÁVEL</th>
-          </tr>
-        </thead>
+      <div class="products-list">
+        <div v-if="products.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <img src="@/assets/svg/productsCard.svg" alt="sem equipamentos" />
+          </div>
+          <h3>Nenhum equipamento cadastrado</h3>
+          <button class="btn-add-product" @click="handleMenuAction('openProductModal')">
+            Cadastrar Equipamento
+          </button>
+        </div>
 
-        <tbody>
-          <tr v-for="product in products" :key="product.id">
-            <td>
-              <input
-                v-model="product.nup"
-                @blur="updateField(product.id, 'nup', product.nup)"
-                class="editable-cell"
-              />
-            </td>
+        <table v-else class="production-table">
+          <thead>
+            <tr>
+              <th class="border-left">NUP</th>
+              <th>SERIAL</th>
+              <th>MODEM</th>
+              <th>IMEI</th>
+              <th>VERSÃO DE FIRMWARE</th>
+              <th>DATA DA PRODUÇÃO</th>
+              <th>LOTE</th>
+              <th class="border-right">RESPONSÁVEL</th>
+            </tr>
+          </thead>
 
-            <td>
-              <input
-                v-model="product.serialNumber"
-                @blur="updateField(product.id, 'serialNumber', product.serialNumber)"
-                class="editable-cell"
-              />
-            </td>
+          <tbody>
+            <tr v-for="product in products" :key="product.id">
+              <td>
+                <input
+                  v-model="product.nup"
+                  @blur="updateField(product.id, 'nup', product.nup)"
+                  class="editable-cell"
+                />
+              </td>
 
-            <td>
-              <input
-                v-model="product.modem"
-                @blur="updateField(product.id, 'modem', product.modem)"
-                class="editable-cell"
-              />
-            </td>
+              <td>
+                <input
+                  v-model="product.serialNumber"
+                  @blur="updateField(product.id, 'serialNumber', product.serialNumber)"
+                  class="editable-cell"
+                />
+              </td>
 
-            <td>
-              <input
-                v-model="product.imei"
-                @blur="updateField(product.id, 'imei', product.imei)"
-                class="editable-cell"
-              />
-            </td>
+              <td>
+                <input
+                  v-model="product.modem"
+                  @blur="updateField(product.id, 'modem', product.modem)"
+                  class="editable-cell"
+                />
+              </td>
 
-            <td>
-              <input
-                v-model="product.firmwareVersion"
-                @blur="updateField(product.id, 'firmwareVersion', product.firmwareVersion)"
-                class="editable-cell"
-              />
-            </td>
+              <td>
+                <input
+                  v-model="product.imei"
+                  @blur="updateField(product.id, 'imei', product.imei)"
+                  class="editable-cell"
+                />
+              </td>
 
-            <td>
-              <input
-                v-model="product.productionDate"
-                @blur="updateField(product.id, 'productionDate', product.productionDate)"
-                type="date"
-                class="editable-cell"
-              />
-            </td>
+              <td>
+                <input
+                  v-model="product.firmwareVersion"
+                  @blur="updateField(product.id, 'firmwareVersion', product.firmwareVersion)"
+                  class="editable-cell"
+                />
+              </td>
 
-            <td>
-              <input
-                v-model="product.batchNumber"
-                @blur="updateField(product.id, 'batchNumber', product.batchNumber)"
-                class="editable-cell"
-              />
-            </td>
+              <td>
+                <input
+                  v-model="product.productionDate"
+                  @blur="updateField(product.id, 'productionDate', product.productionDate)"
+                  type="date"
+                  class="editable-cell"
+                />
+              </td>
 
-            <td>
-              <input
-                v-model="product.producerName"
-                @blur="updateField(product.id, 'producerName', product.producerName)"
-                class="editable-cell"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <td>
+                <input
+                  v-model="product.batchNumber"
+                  @blur="updateField(product.id, 'batchNumber', product.batchNumber)"
+                  class="editable-cell"
+                />
+              </td>
+
+              <td>
+                <input
+                  v-model="product.producerName"
+                  @blur="updateField(product.id, 'producerName', product.producerName)"
+                  class="editable-cell"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <SidebarMenu
       :isVisible="showSideBar"
+      :userName="userName"
       :menuItems="sidebarMenuItems"
       @menu-action="handleMenuAction"
       @close="closeSideBar"
@@ -127,10 +143,13 @@ import { getProduct } from '@/services/productService.js'
 import ProductFormModal from '@/components/ProductFormModal.vue'
 import SidebarMenu from '@/components/SidebarMenu.vue'
 import api from '@/services/api.js'
-
 import productsIcon from '@/assets/svg/products.svg'
+import { getCurrentUser } from '@/services/userService.js'
+import router from '@/router/index.js'
 
 const route = useRoute()
+const userName = ref('Carregando...')
+const productTypeName = ref('Carregando...')
 const products = ref([])
 const showSideBar = ref(false)
 const showProductModal = ref(false)
@@ -145,6 +164,16 @@ const sidebarMenuItems = [
 ]
 
 onMounted(async () => {
+  const result = await getCurrentUser()
+  if (result.success) {
+    userName.value = result.data.name
+  } else {
+    userName.value = 'Usuário'
+  }
+})
+
+onMounted(async () => {
+  await loadProductTypeName()
   await loadProducts()
 })
 
@@ -165,6 +194,23 @@ function handleMenuAction(action) {
 
   if (actions[action]) {
     actions[action]()
+  }
+}
+
+async function loadProductTypeName() {
+  try {
+    const productTypeId = route.params.productTypeId
+    const response = await api.get('/product-types')
+    const productType = response.data.find((pt) => pt.id === parseInt(productTypeId))
+
+    if (productType) {
+      productTypeName.value = productType.name
+    } else {
+      productTypeName.value = 'Controle de Produção'
+    }
+  } catch (error) {
+    console.error('Erro ao carregar o tipo de produto:', error)
+    productTypeName.value = 'Controle de Produção'
   }
 }
 
@@ -221,10 +267,11 @@ async function updateField(productId, fieldName, value) {
 </script>
 
 <style scoped>
-.home-container {
+.production-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: #e5e7eb;
 }
 
 .header-container {
@@ -232,41 +279,102 @@ async function updateField(productId, fieldName, value) {
   justify-content: space-between;
   align-items: center;
   height: 8vh;
-  background-color: #ffffffff;
   padding: 0 1rem;
+  border-bottom: 1px solid #d0d0d0;
+  background-color: var(--primary-color);
 }
 
-.menu-toggle {
-  border: none;
-  background-color: #ffffffff;
+.btn-back {
   cursor: pointer;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border: none;
   padding: 0;
 }
 
-.menu-toggle:active {
-  background-color: #eeeeee;
-  border-radius: 50%;
+.btn-back:hover {
+  background-color: #e5e7eb;
+}
+
+.header-container h1 {
+  margin: 0;
+}
+
+.menu-toggle {
+  cursor: pointer;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border: none;
+  padding: 0;
+}
+
+.menu-toggle:hover {
+  background-color: #e5e7eb;
 }
 
 .content-container {
   display: flex;
-  justify-content: center;
-  min-height: 400px;
+  flex-direction: column;
+  min-height: 250px;
+  background-color: #ffffffff;
   margin: 1.5rem;
   border-radius: 5px;
+  overflow-y: auto;
+  border: 1px solid #d0d0d0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #d0d0d0;
+  padding: 10px;
+}
+
+.section-header h2 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.search-container input {
+  min-width: 200px;
+  height: 45px;
+  border: none;
+  padding: 0 1rem;
+  outline: none;
+}
+
+.search-btn {
+  height: 45px;
+  background-color: #f3f4f6;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.products-list {
+  margin: 10px;
 }
 
 .production-table {
+  width: 100%;
   text-align: center;
-  background-color: #ffffffff;
-  border-radius: 20px;
+  border-radius: 10px;
   border-collapse: collapse;
-  height: 100px;
-  margin-top: 1rem;
 }
 
 .production-table thead {
-  background-color: #d0d0d0;
+  background-color: #000000ff;
   color: #ffffffff;
 }
 
@@ -275,6 +383,13 @@ async function updateField(productId, fieldName, value) {
 }
 
 .production-table td {
+  border-bottom: 1px solid #d0d0d0;
+  padding: 0.5rem;
+}
+
+.production-table td {
+  border-right: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
   padding: 0.5rem;
 }
 
@@ -289,6 +404,7 @@ async function updateField(productId, fieldName, value) {
 .editable-cell {
   border: 1px solid transparent;
   text-align: center;
+  width: 100%;
 }
 
 .editable-cell:focus {
@@ -303,14 +419,10 @@ async function updateField(productId, fieldName, value) {
   justify-content: center;
   padding: 1rem 1rem;
   text-align: center;
-  min-height: 400px;
-  background-color: #ffffff;
-  border-radius: 20px;
-  width: 100%;
 }
 
 .empty-icon {
-  opacity: 0.3;
+  opacity: 0.2;
   margin-bottom: 1.5rem;
 }
 
@@ -336,6 +448,6 @@ async function updateField(productId, fieldName, value) {
 }
 
 .btn-add-product:hover {
-  opacity: 0.9;
+  opacity: 0.6;
 }
 </style>

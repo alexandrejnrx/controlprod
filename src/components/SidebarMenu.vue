@@ -90,7 +90,6 @@ function handleMenuClick(action) {
   border-left: 1px solid var(--border-color);
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .slide-enter-active,
@@ -148,7 +147,7 @@ function handleMenuClick(action) {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1rem;
-  background-color: #ffffffff;
+  background-color: var(--primary-color);
   cursor: pointer;
   border: none;
   gap: 1rem;
@@ -156,7 +155,7 @@ function handleMenuClick(action) {
 }
 
 .action-btn:hover {
-  background-color: #e5e7eb;
+  background-color: #eeeeee;
 }
 
 .action-btn span {
