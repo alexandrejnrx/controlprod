@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginVue from '@/views/LoginVue.vue'
 import HomeVue from '@/views/HomeVue.vue'
 import ProductionVue from '@/views/ProductionVue.vue'
-import { tokenService } from '@/services/tokenService.js'
+import { useAuthStore } from '@/stores/authStore.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,17 +29,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = tokenService.getToken()
-  const isAuthenticated = !!token
+  const authStore = useAuthStore()
 
   if (to.meta.requiresAuth) {
-    if (isAuthenticated) {
+    if (authStore.isAuthenticated) {
       next()
     } else {
       next({ name: 'login' })
     }
   } else {
-    if (to.name === 'login' && isAuthenticated) {
+    if (to.name === 'login' && authStore.isAuthenticated) {
       next({ name: 'home' })
     } else {
       next()
