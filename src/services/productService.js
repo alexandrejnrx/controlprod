@@ -10,9 +10,9 @@ export async function getProduct() {
   }
 }
 
-export async function createProduct(clientData) {
+export async function createProduct(productData) {
   try {
-    const response = await api.post('/products', clientData)
+    const response = await api.post('/products', productData)
     return { success: true, data: response.data }
   } catch (error) {
     console.error('Erro ao cadastrar produtos', error)

@@ -94,7 +94,7 @@ import projectIcon from '@/assets/svg/project.svg'
 import productsIcon from '@/assets/svg/products.svg'
 import logoutIcon from '@/assets/svg/logout.svg'
 import { getCurrentUser } from '@/services/userService.js'
-import { tokenService } from '@/services/tokenService.js'
+import { useAuthStore } from '@/stores/authStore.js'
 
 const userName = ref('Carregando...')
 const productTypes = ref([])
@@ -102,6 +102,7 @@ const showSideBar = ref(false)
 const showPartnersModal = ref(false)
 const showProjectModal = ref(false)
 const showProductTypeModal = ref(false)
+const authStore = useAuthStore()
 
 const sidebarMenuItems = [
   {
@@ -163,7 +164,7 @@ function handleMenuAction(action) {
       showProductTypeModal.value = true
     },
     logout: () => {
-      logout()
+      handleLogout()
     },
   }
 
@@ -202,9 +203,8 @@ async function handleProductTypeSuccess() {
   await loadProductTypes()
 }
 
-function logout() {
-  tokenService.removeToken()
-  router.push('/')
+function handleLogout() {
+  authStore.logout()
 }
 </script>
 

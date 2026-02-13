@@ -24,17 +24,7 @@
       </div>
 
       <div class="products-list">
-        <div v-if="products.length === 0" class="empty-state">
-          <div class="empty-icon">
-            <img src="@/assets/svg/productsCard.svg" alt="sem equipamentos" />
-          </div>
-          <h3>Nenhum equipamento cadastrado</h3>
-          <button class="btn-add-product" @click="handleMenuAction('openProductModal')">
-            Cadastrar Equipamento
-          </button>
-        </div>
-
-        <table v-else class="production-table">
+        <table class="production-table">
           <thead>
             <tr>
               <th class="border-left">NUP</th>
@@ -115,6 +105,65 @@
                 />
               </td>
             </tr>
+
+            <tr class="create-container">
+              <td>
+                <input v-model="newProduct.nup" placeholder="NUP..." class="editable-cell" />
+              </td>
+
+              <td>
+                <input
+                  v-model="newProduct.serialNumber"
+                  placeholder="SERIAL..."
+                  class="editable-cell"
+                />
+              </td>
+
+              <td>
+                <input v-model="newProduct.modem" placeholder="MODEM..." class="editable-cell" />
+              </td>
+
+              <td>
+                <input v-model="newProduct.imei" placeholder="IMEI..." class="editable-cell" />
+              </td>
+
+              <td>
+                <input
+                  v-model="newProduct.firmwareVersion"
+                  placeholder="VERSÃO..."
+                  class="editable-cell"
+                />
+              </td>
+
+              <td>
+                <input
+                  v-model="newProduct.productionDate"
+                  type="date"
+                  placeholder="DATA..."
+                  class="editable-cell"
+                />
+              </td>
+
+              <td>
+                <input
+                  v-model="newProduct.batchNumber"
+                  placeholder="LOTE..."
+                  class="editable-cell"
+                />
+              </td>
+
+              <td>
+                <input
+                  v-model="newProduct.producerName"
+                  placeholder="RESPONSÁVEL..."
+                  class="editable-cell"
+                />
+              </td>
+
+              <td>
+                <button @click="createNewProduct">Salvar</button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -127,42 +176,38 @@
       @menu-action="handleMenuAction"
       @close="closeSideBar"
     />
-
-    <ProductFormModal
-      v-if="showProductModal"
-      @cancel="showProductModal = false"
-      @success="handleProductSuccess"
-    />
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getProduct } from '@/services/productService.js'
-import ProductFormModal from '@/components/ProductFormModal.vue'
+import { createProduct, getProduct } from '@/services/productService.js'
 import SidebarMenu from '@/components/SidebarMenu.vue'
 import api from '@/services/api.js'
-import productsIcon from '@/assets/svg/products.svg'
 import { getCurrentUser } from '@/services/userService.js'
 import router from '@/router/index.js'
 import logoutIcon from '@/assets/svg/logout.svg'
-import { logout } from '@/services/homeService.js'
+import { useAuthStore } from '@/stores/authStore.js'
 
 const route = useRoute()
 const userName = ref('Carregando...')
 const productTypeName = ref('Carregando...')
 const products = ref([])
 const showSideBar = ref(false)
-const showProductModal = ref(false)
+const authStore = useAuthStore()
+const newProduct = ref({
+  nup: '',
+  serialNumber: '',
+  modem: '',
+  imei: '',
+  firmwareVersion: '',
+  productionDate: '',
+  batchNumber: '',
+  producerName: '',
+})
 
 const sidebarMenuItems = [
-  {
-    id: 'register-equipment',
-    label: 'Cadastrar Equipamentos',
-    icon: productsIcon,
-    action: 'openProductModal',
-  },
   {
     id: 'logout',
     label: 'Sair',
@@ -195,11 +240,8 @@ function closeSideBar() {
 
 function handleMenuAction(action) {
   const actions = {
-    openProductModal: () => {
-      showProductModal.value = true
-    },
     logout: () => {
-      logout()
+      handleLogout()
     },
   }
 
@@ -236,11 +278,6 @@ async function loadProducts() {
   }
 }
 
-async function handleProductSuccess() {
-  showProductModal.value = false
-  await loadProducts()
-}
-
 async function updateField(productId, fieldName, value) {
   try {
     const endpoints = {
@@ -273,6 +310,59 @@ async function updateField(productId, fieldName, value) {
     await api.patch(endpoint.url, endpoint.data)
   } catch (error) {
     console.error('Erro ao atualizar:', error)
+  }
+}
+
+function handleLogout() {
+  authStore.logout()
+}
+
+async function createNewProduct() {
+  if (!newProduct.value.nup) {
+    console.log('Preencha o NUP')
+    return
+  }
+
+  try {
+    const productTypeId = route.params.productTypeId
+
+    const productData = {
+      nup: newProduct.value.nup,
+      serialNumber: newProduct.value.serialNumber,
+      modem: newProduct.value.modem,
+      imei: newProduct.value.imei,
+      firmwareVersion: newProduct.value.firmwareVersion,
+      productionDate: newProduct.value.productionDate,
+      batchNumber: newProduct.value.batchNumber,
+      producerName: newProduct.value.producerName,
+      productType: {
+        id: parseInt(productTypeId),
+      },
+    }
+
+    const result = await createProduct(productData)
+
+    if (result.success) {
+      await loadProducts()
+      clearProductData()
+    } else {
+      console.log('Erro ao criar equipamento')
+    }
+  } catch (error) {
+    console.error('Erro ao criar: ', error)
+  }
+}
+
+function clearProductData() {
+  newProduct.value = {
+    nup: '',
+    serialNumber: '',
+    modem: '',
+    imei: '',
+    firmwareVersion: '',
+    productionDate: '',
+    batchNumber: '',
+    producerName: '',
   }
 }
 </script>
@@ -398,12 +488,6 @@ async function updateField(productId, fieldName, value) {
   padding: 0.5rem;
 }
 
-.production-table td {
-  border-right: 1px solid var(--border-color);
-  border-left: 1px solid var(--border-color);
-  padding: 0.5rem;
-}
-
 .border-left {
   border-radius: 10px 0 0 0;
 }
@@ -421,44 +505,5 @@ async function updateField(productId, fieldName, value) {
 .editable-cell:focus {
   outline: none;
   border-color: var(--border-color);
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 1rem;
-  text-align: center;
-}
-
-.empty-icon {
-  opacity: 0.2;
-  margin-bottom: 1.5rem;
-}
-
-.empty-icon img {
-  width: 80px;
-  height: 80px;
-}
-
-.empty-state h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.25rem;
-}
-
-.btn-add-product {
-  padding: 0.75rem 1.5rem;
-  background-color: var(--btn-primary-color);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.3s;
-}
-
-.btn-add-product:hover {
-  opacity: 0.6;
 }
 </style>
